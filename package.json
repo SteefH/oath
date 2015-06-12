@@ -1,20 +1,22 @@
 {
-  "name": "again.js",
+  "name": "oath.js",
   "version": "0.0.1",
-  "description": "",
+  "description": "Utilities for breaking and keeping promises",
   "main": "index.js",
   "scripts": {
     "test": "node node_modules/karma/bin/karma start --single-run"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Stefan van der Haven",
+  "license": "MIT",
   "devDependencies": {
+    "babelify": "^6.1.2",
+    "es6-promise": "^2.3.0",
     "jasmine-core": "^2.3.4",
     "karma": "^0.12.36",
-    "karma-babel-preprocessor": "^5.2.1",
+    "karma-browserify": "^4.2.1",
     "karma-chrome-launcher": "^0.1.12",
-    "karma-commonjs": "*",
     "karma-jasmine": "~0.3.0",
+    "karma-jasmine-matchers": "^2.0.0-beta1",
     "karma-phantomjs-launcher": "^0.2.0",
     "phantomjs": "^1.9.17"
   }

@@ -12,27 +12,31 @@ module.exports = function(config) {
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks:
       [ 'jasmine'
-      // , 'commonjs'
+      , 'jasmine-matchers'
+      , 'browserify'
       ],
 
 
     // list of files / patterns to load in the browser
     files: [
-      'src/**/*.js',
+      // 'node_modules/es6-promise/dist/es6-promise.js',
+      // 'src/**/*.js',
       'spec/**/*.js'
     ],
 
 
     // list of files to exclude
     exclude: [
+      // 'spec/helpers/**/*.js'
     ],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      // 'src/*.js': ['babel'],
-      'spec/**/*.js': ['babel']
+      // 'node_modules/**/*.js': ['commonjs'],
+      // 'src/*.js': ['commonjs'],
+      'spec/**/*.js': ['browserify']
     },
 
 
@@ -66,12 +70,12 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false/*,
-    plugins: [
-      // 'karma-jasmine',
-      // 'karma-phantomjs-launcher',
-      // 'karma-chrome-launcher',
-      // 'karma-commonjs'
-    ]*/
+    singleRun: false,
+
+    browserify: {
+      transform: ['babelify'],
+      debug: true
+    }
+
   });
 };
