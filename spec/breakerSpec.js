@@ -1,11 +1,9 @@
 'use strict';
 // import './helpers/matchers/toBeFunction.js';
 import es6Promise from 'es6-promise';
-import jasmineAsPromised from 'jasmine-as-promised';
 import oath from '../src/oath.js';
 
 es6Promise.polyfill();
-jasmineAsPromised();
 
 describe('calling oath.breaker()',  () => {
   it('should throw an exception when anything but a function is passed as its first argument', () => {
@@ -90,11 +88,18 @@ describe('calling oath.breaker()',  () => {
           )
         );
         function doneRunner(done, v) {
-          return () => {
+          return function () {
             expect(v).toEqual('ok');
             done();
           };
         }
+        var originalTimeout;
+        beforeEach(() => {
+          originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+          jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
+        });
+        afterEach(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout);
+
         describe('once', () => {
           it(', the returned promise should resolve when the promise returned by the wrapped function resolves ', (done) => {
             resolveAfter(5).then(doneRunner(done, 'ok'));
@@ -102,11 +107,10 @@ describe('calling oath.breaker()',  () => {
         });
         describe('repeatedly', () => {
           it('never resolves previously returned pending promises', (done) => {
-            /// TODO
-            done();
-            // resolveAfter(5).then(doneRunner(done, 'should not resolve after 5'));
-            // resolveAfter(6).then(doneRunner(done, 'should not resolve after 6'));
-            // resolveAfter(10).then(doneRunner(done, 'ok'));
+            resolveAfter(1).then(doneRunner(done, 'should not resolve after 1'));
+            resolveAfter(2).then(doneRunner(done, 'should not resolve after 2'));
+            resolveAfter(10).then(doneRunner(done, 'should not resolve after 10'));
+            resolveAfter(3).then(doneRunner(done, 'ok'));
           });
         });
       })

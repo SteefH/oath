@@ -14,61 +14,60 @@
 }(this, function () {
 
   'use strict';
-  var promiseFuncs;
-  initialize();
+  var promiseFuncs = {
+    defer: function () {
+      var deferred = {};
+      deferred.promise = new Promise(function (resolve, reject) {
+        deferred.resolve = resolve;
+        deferred.reject = reject;
+      });
+      return deferred;
+    }
+  };
 
   return {
     breaker: breaker
   };
 
-  function initialize() {
-    promiseFuncs = {
-      defer: function () {
-        var result = {
-          resolve: function () {},
-          reject: function () {},
-          promise: new Promise(function (resolve, reject) {
-            result.resolve = resolve;
-            result.reject = reject;
-          })
-        };
-        return result;
-      },
-      resolve: function (value) {
-        return this.resolve(value);
-      },
-      reject: function (value) {
-        return this.reject(value);
-      },
-      getPromise: function() {
-        return this.promise;
-      }
-    };
-  }
-
   function configure(options) {
-    promiseFuncs = 'defer resolve reject getPromise'.split(' ').reduce(function (funcs, member) {
-      funcs[member] = options[member] || funcs[member];
-      return funcs;
-    });
-
+    promiseFuncs.defer = options.defer || promiseFuncs.defer;
   }
 
   function breaker(fn) {
     if (!isFunction(fn)) {
       throw new Error('Not a function');
     }
-    return wrapper;
+    return (function () {
+      var lastCallData = {};
+      return function wrapper() {
+        var deferredForThisCall = promiseFuncs.defer();
+        lastCallData.deferred = null; // signal the preceding resolve handler that the promise should be abandoned
+        lastCallData = { deferred: deferredForThisCall };
+        var result = fn.apply(this, arguments);
+        asPromise(result).then(createResolveHandler(lastCallData));
+        return deferredForThisCall.promise;
+      };
+    }());
 
-    function wrapper() {
-
-      var result = fn.apply(this, arguments);
-      if (typeof result === 'object' && isFunction(result.then)) {
-        return result;
+    function asPromise(value) {
+      if (isPromise(value)) {
+        return value;
       }
       var deferred = promiseFuncs.defer();
-      promiseFuncs.resolve.call(deferred, result);
-      return promiseFuncs.getPromise.call(deferred);
+      deferred.resolve(value);
+      return deferred.promise;
+    }
+
+    function createResolveHandler(callData) {
+      return function (v) {
+        callData.deferred && callData.deferred.resolve(v);
+      }
+    }
+
+    function createRejectHandler(callData) {
+      return function (v) {
+        callData.deferred && callData.deferred.reject(v);
+      }
     }
 
   }
@@ -77,5 +76,8 @@
     return fn && {}.toString.call(fn) == '[object Function]';
   }
 
+  function isPromise(obj) {
+    return typeof obj === 'object' && isFunction(obj.then);
+  }
 
 }));
