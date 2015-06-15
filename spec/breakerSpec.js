@@ -82,15 +82,12 @@ describe('calling oath.breaker()',  () => {
       });
 
       describe('when called', () => {
-        var resolveAfter = oath.breaker(
-          msToWait => new Promise(
-            resolve => setTimeout(resolve, msToWait)
-          )
+        var resolveAfter, rejectAfter, settleAfter;
+        resolveAfter = msToWait => new Promise(
+          resolve => setTimeout(resolve, msToWait)
         );
-        var rejectAfter = oath.breaker(
-          msToWait => new Promise(
-            (resolve, reject) => setTimeout(reject, msToWait)
-          )
+        rejectAfter = msToWait => new Promise(
+          (resolve, reject) => setTimeout(reject, msToWait)
         );
         function doneRunner(done, v) {
           return function () {
@@ -106,33 +103,43 @@ describe('calling oath.breaker()',  () => {
         afterEach(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout);
 
         describe('once', () => {
-          it(', the returned promise should resolve when the promise returned by the wrapped function resolves ', (done) => {
-            resolveAfter(5).then(doneRunner(done, 'ok'));
+          it(', the returned promise should resolve when the promise returned by the wrapped function resolves ', done => {
+            var resolveAfterBreaker = oath.breaker(resolveAfter);
+            resolveAfterBreaker(5).then(doneRunner(done, 'ok'));
           });
-          it(', the returned promise should be rejected when the promise returned by the wrapped function is rejected', (done) => {
-            rejectAfter(5).then(undefined, doneRunner(done, 'ok'));
+          it(', the returned promise should be rejected when the promise returned by the wrapped function is rejected', done => {
+            var rejectAfterBreaker = oath.breaker(rejectAfter);
+            rejectAfterBreaker(5).then(undefined, doneRunner(done, 'ok'));
           });
 
         });
         describe('repeatedly', () => {
-          it('never resolves previously returned pending promises', (done) => {
-            resolveAfter(1).then(doneRunner(done, 'should not resolve after 1'));
-            resolveAfter(2).then(doneRunner(done, 'should not resolve after 2'));
-            resolveAfter(10).then(doneRunner(done, 'should not resolve after 10'));
-            resolveAfter(3).then(doneRunner(done, 'ok'));
+          it('never resolves previously returned pending promises', done => {
+            var resolveAfterBreaker = oath.breaker(resolveAfter);
+            var runDone = (txt) => doneRunner(done, txt);
+            resolveAfterBreaker(1 ).then(runDone('should not resolve'), runDone('should not reject'));
+            resolveAfterBreaker(2 ).then(runDone('should not resolve'), runDone('should not reject'));
+            resolveAfterBreaker(10).then(runDone('should not resolve'), runDone('should not reject'));
+            resolveAfterBreaker(3 ).then(runDone('ok'),                 runDone('should not reject'));
           });
-          it('never rejects previously returned pending promises', (done) => {
-            rejectAfter(1).then(undefined, doneRunner(done, 'should not resolve after 1'));
-            rejectAfter(2).then(undefined, doneRunner(done, 'should not resolve after 2'));
-            rejectAfter(10).then(undefined, doneRunner(done, 'should not resolve after 10'));
-            rejectAfter(3).then(undefined, doneRunner(done, 'ok'));
+          it('never rejects previously returned pending promises', done => {
+            var rejectAfterBreaker = oath.breaker(rejectAfter);
+            var runDone = (txt) => doneRunner(done, txt);
+            rejectAfterBreaker(1).then(runDone('should not resolve'), runDone('should not reject'));
+            rejectAfterBreaker(2).then(runDone('should not resolve'), runDone('should not reject'));
+            rejectAfterBreaker(1).then(runDone('should not resolve'), runDone('should not reject'));
+            rejectAfterBreaker(3).then(runDone('should not resolve'), runDone('ok'));
           });
-          xit('never settles previously returned pending promises', (done) => {
-            rejectAfter(10).then(undefined, doneRunner(done, 'should not resolve after 1'));
-            resolveAfter(20).then(doneRunner(done, 'should not resolve after 2'));
-            rejectAfter(30).then(undefined, doneRunner(done, 'should not resolve after 3'));
-            resolveAfter(40).then(doneRunner(done, 'should not resolve after 4'));
-            rejectAfter(50).then(undefined, doneRunner(done, 'ok'));
+          it('never settles previously returned pending promises', done => {
+            var settleBreaker = oath.breaker((succes, msToWait) => new Promise(
+              (resolve, reject) => setTimeout(success ? resolve: reject, msToWait)
+            ));
+            var runDone = (txt) => doneRunner(done, txt);
+            settleBreaker(false, 10).then(runDone('should not resolve'), runDone('should not reject'));
+            settleBreaker(true,  20).then(runDone('should not resolve'), runDone('should not reject'));
+            settleBreaker(false, 30).then(runDone('should not resolve'), runDone('should not reject'));
+            settleBreaker(true,  40).then(runDone('should not resolve'), runDone('should not reject'));
+            settleBreaker(false, 50).then(runDone('should not resolve'), doneRunner(done, 'ok'));
           });
         });
 
