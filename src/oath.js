@@ -44,7 +44,10 @@
         lastCallData.deferred = null; // signal the preceding resolve handler that the promise should be abandoned
         lastCallData = { deferred: deferredForThisCall };
         var result = fn.apply(this, arguments);
-        asPromise(result).then(createResolveHandler(lastCallData));
+        asPromise(result).then(
+          createResolveHandler(lastCallData),
+          createRejectHandler(lastCallData)
+        );
         return deferredForThisCall.promise;
       };
     }());

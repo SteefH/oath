@@ -87,6 +87,11 @@ describe('calling oath.breaker()',  () => {
             resolve => setTimeout(resolve, msToWait)
           )
         );
+        var rejectAfter = oath.breaker(
+          msToWait => new Promise(
+            (resolve, reject) => setTimeout(reject, msToWait)
+          )
+        );
         function doneRunner(done, v) {
           return function () {
             expect(v).toEqual('ok');
@@ -104,6 +109,10 @@ describe('calling oath.breaker()',  () => {
           it(', the returned promise should resolve when the promise returned by the wrapped function resolves ', (done) => {
             resolveAfter(5).then(doneRunner(done, 'ok'));
           });
+          it(', the returned promise should be rejected when the promise returned by the wrapped function is rejected', (done) => {
+            rejectAfter(5).then(undefined, doneRunner(done, 'ok'));
+          });
+
         });
         describe('repeatedly', () => {
           it('never resolves previously returned pending promises', (done) => {
@@ -112,7 +121,22 @@ describe('calling oath.breaker()',  () => {
             resolveAfter(10).then(doneRunner(done, 'should not resolve after 10'));
             resolveAfter(3).then(doneRunner(done, 'ok'));
           });
+          it('never rejects previously returned pending promises', (done) => {
+            rejectAfter(1).then(undefined, doneRunner(done, 'should not resolve after 1'));
+            rejectAfter(2).then(undefined, doneRunner(done, 'should not resolve after 2'));
+            rejectAfter(10).then(undefined, doneRunner(done, 'should not resolve after 10'));
+            rejectAfter(3).then(undefined, doneRunner(done, 'ok'));
+          });
+          xit('never settles previously returned pending promises', (done) => {
+            rejectAfter(10).then(undefined, doneRunner(done, 'should not resolve after 1'));
+            resolveAfter(20).then(doneRunner(done, 'should not resolve after 2'));
+            rejectAfter(30).then(undefined, doneRunner(done, 'should not resolve after 3'));
+            resolveAfter(40).then(doneRunner(done, 'should not resolve after 4'));
+            rejectAfter(50).then(undefined, doneRunner(done, 'ok'));
+          });
         });
+
+
       })
     });
   });
