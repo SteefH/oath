@@ -26,7 +26,8 @@
   };
 
   return {
-    breaker: breaker
+    breaker: breaker,
+    keeper: keeper
   };
 
   function configure(options) {
@@ -52,14 +53,7 @@
       };
     }());
 
-    function asPromise(value) {
-      if (isPromise(value)) {
-        return value;
-      }
-      var deferred = promiseFuncs.defer();
-      deferred.resolve(value);
-      return deferred.promise;
-    }
+
 
     function createResolveHandler(callData) {
       return function (v) {
@@ -72,7 +66,46 @@
         callData.deferred && callData.deferred.reject(v);
       }
     }
+  }
 
+  function keeper(fn) {
+    if (!isFunction(fn)) {
+      throw new Error('Not a function');
+    }
+
+    return (function () {
+      var hasPendingCall = false;
+
+      return function () {
+        if (hasPendingCall) {
+          return promiseFuncs.defer().promise;
+        }
+        var result = fn.apply(this, [].slice.call(arguments));
+        hasPendingCall = true;
+
+        return asPromise(result).then(
+          function (v) {
+            hasPendingCall = false;
+            return v;
+          },
+          function (e) {
+            hasPendingCall = false;
+            throw e;
+          }
+        );
+      };
+    }());
+
+
+  }
+
+  function asPromise(value) {
+    if (!isPromise(value)) {
+      var deferred = promiseFuncs.defer();
+      deferred.resolve(value);
+      value = deferred.promise;
+    }
+    return value;
   }
 
   function isFunction(fn) {
