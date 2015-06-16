@@ -23,5 +23,8 @@
   "repository" : {
     "type" : "git",
     "url" : "https://github.com/SteefH/oath.js.git"
+  },
+  "engines": {
+    "node" : ">=0.10"
   }
 }
