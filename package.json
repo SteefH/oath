@@ -2,7 +2,7 @@
   "name": "oath",
   "version": "0.0.1",
   "description": "Utilities for breaking and keeping promises",
-  "main": "index.js",
+  "main": "src/oath.js",
   "scripts": {
     "test": "node node_modules/karma/bin/karma start --single-run"
   },
@@ -22,7 +22,10 @@
   },
   "repository" : {
     "type" : "git",
-    "url" : "https://github.com/SteefH/oath.js.git"
+    "url" : "https://github.com/SteefH/oath.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SteefH/oath/issues"
   },
   "engines": {
     "node" : ">=0.10"
