@@ -1,5 +1,5 @@
 {
-  "name": "oath.js",
+  "name": "oath",
   "version": "0.0.1",
   "description": "Utilities for breaking and keeping promises",
   "main": "index.js",

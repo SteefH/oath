@@ -1,4 +1,4 @@
-oath.js
+oath
 =======
 
 Utilities for breaking and keeping promises
