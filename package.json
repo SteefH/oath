@@ -4,7 +4,7 @@
   "description": "Utilities for breaking and keeping promises",
   "main": "src/oath.js",
   "scripts": {
-    "test": "node node_modules/karma/bin/karma start --single-run"
+    "build": "node scripts/build.js"
   },
   "author": "Stefan van der Haven",
   "license": "MIT",
@@ -12,6 +12,7 @@
     "babelify": "^6.1.2",
     "browserify": "^10.2.4",
     "es6-promise": "^2.3.0",
+    "gulp": "^3.9.0",
     "jasmine-core": "^2.3.4",
     "karma": "^0.12.36",
     "karma-browserify": "^4.2.1",
@@ -30,8 +31,5 @@
   },
   "engines": {
     "node": ">=0.10"
-  },
-  "scripts": {
-    "build": "node scripts/build.js"
   }
 }
