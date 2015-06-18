@@ -10,6 +10,7 @@
   "license": "MIT",
   "devDependencies": {
     "babelify": "^6.1.2",
+    "browserify": "^10.2.4",
     "es6-promise": "^2.3.0",
     "jasmine-core": "^2.3.4",
     "karma": "^0.12.36",
@@ -20,14 +21,17 @@
     "karma-phantomjs-launcher": "^0.2.0",
     "phantomjs": "^1.9.17"
   },
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/SteefH/oath.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SteefH/oath.git"
   },
   "bugs": {
     "url": "https://github.com/SteefH/oath/issues"
   },
   "engines": {
-    "node" : ">=0.10"
+    "node": ">=0.10"
+  },
+  "scripts": {
+    "build": "node scripts/build.js"
   }
 }
