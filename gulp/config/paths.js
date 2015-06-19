@@ -1,0 +1,18 @@
+var PROJECT_DIR      = __dirname + '/../../',
+    SRC_DIR          = PROJECT_DIR + 'src/',
+
+    ENTRY_POINT_FILE = 'oath.js',
+    ENTRY_POINT_PATH = SRC_DIR + ENTRY_POINT_FILE,
+    OUTPUT_DIR       = PROJECT_DIR + 'dist/',
+    OUTPUT_FILE_NAME = 'oath.js',
+    OUTPUT_PATH      = OUTPUT_DIR + OUTPUT_FILE_NAME;
+
+module.exports = {
+  PROJECT_DIR:      PROJECT_DIR,
+  SRC_DIR:          SRC_DIR,
+  ENTRY_POINT_FILE: ENTRY_POINT_FILE,
+  ENTRY_POINT_PATH: ENTRY_POINT_PATH,
+  OUTPUT_DIR:       OUTPUT_DIR,
+  OUTPUT_FILE_NAME: OUTPUT_FILE_NAME,
+  OUTPUT_PATH:      OUTPUT_PATH
+};

@@ -20,7 +20,8 @@
     "karma-jasmine": "~0.3.0",
     "karma-jasmine-matchers": "^2.0.0-beta1",
     "karma-phantomjs-launcher": "^0.2.0",
-    "phantomjs": "^1.9.17"
+    "phantomjs": "^1.9.17",
+    "vinyl-source-stream": "^1.1.0"
   },
   "repository": {
     "type": "git",

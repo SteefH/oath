@@ -1,7 +1,7 @@
 'use strict';
 // import './helpers/matchers/toBeFunction.js';
 import es6Promise from 'es6-promise';
-import oath from '../src/oath.js';
+import oath from '../src/oath';
 
 es6Promise.polyfill();
 
