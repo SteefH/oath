@@ -4,7 +4,8 @@
   "description": "Utilities for breaking and keeping promises",
   "main": "src/oath.js",
   "scripts": {
-    "build": "node scripts/build.js"
+    "build": "node scripts/build.js",
+    "test": "node node_modules/gulp/bin/gulp.js test"
   },
   "author": "Stefan van der Haven",
   "license": "MIT",
